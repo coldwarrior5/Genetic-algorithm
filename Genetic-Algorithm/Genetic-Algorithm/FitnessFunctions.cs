@@ -2,7 +2,7 @@
 
 namespace Genetic_Algorithm
 {
-	public class FitnessFunctions
+	public static class FitnessFunctions
 	{
 		public static float Fitness1(float[] desiredOutput, float[] givenOutput)
 		{
