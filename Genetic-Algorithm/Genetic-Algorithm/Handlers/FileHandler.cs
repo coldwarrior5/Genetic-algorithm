@@ -1,26 +1,18 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace Genetic_Algorithm
+namespace Genetic_Algorithm.Handlers
 {
-	public class DataReader
+	public static class FileHandler
 	{
-		public const int InputVectorSize = 2; // Number of params
-
-		private string _fileName;
-
-		public void DefineFile(string fileName)
+		private static void LoadFile(string fileName, out string[] allLines)
 		{
-			_fileName = fileName;
+			allLines = File.ReadAllLines(fileName);
 		}
 
-		public void LoadFile(out string[] allLines)
+		public static void ParseLines(string fileName, out float[][] inputParams, out float[] desiredOutput)
 		{
-			allLines = File.ReadAllLines(_fileName);
-		}
-
-		public void ParseLines(string[] allLines, out float[][] inputParams, out float[] desiredOutput)
-		{
+			LoadFile(fileName, out string[] allLines);
 			float[][] inputs = new float[allLines.Length][];
 			float[] outputs = new float[allLines.Length];
 

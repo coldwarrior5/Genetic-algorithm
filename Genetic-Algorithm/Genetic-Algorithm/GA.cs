@@ -3,15 +3,16 @@ using System.Threading.Tasks;
 
 namespace Genetic_Algorithm
 {
-	public class GA
+	public abstract class Ga
 	{
-		private int _testSize;
-		private int _populationSize;
+		private readonly int _testSize;
+		protected int PopulationSize;
 		private readonly float[][] _inputs;
 		private readonly float[] _desiredOutput;
-		private Genome[] Population;
+		protected Genome[] Population;
+		protected Genome BestGenome;
 
-        public GA(float[][] inputs, float[] desiredOutputs)
+        protected Ga(float[][] inputs, float[] desiredOutputs)
 		{
 			if(inputs.Length != desiredOutputs.Length)
 				throw new Exception("Number of inputs is not equal to number of outputs");
@@ -20,15 +21,30 @@ namespace Genetic_Algorithm
 			_desiredOutput = desiredOutputs;
 		}
 
+		public abstract Genome Start();
+
 		public void DeterminePopulationFitness()
 		{
-			Parallel.For(0, _populationSize, i =>
+			object syncObject = new object();
+
+			Parallel.ForEach(Population, ()=> new Genome(null, float.MinValue), (genome, loopState, localState) =>
+			{
+				DetermineGenomeFitness(genome);
+				return localState.Fitness > genome.Fitness ? localState : genome;
+			},
+			localState =>
+			{
+				lock (syncObject)
+					BestGenome = localState.Fitness > BestGenome.Fitness ? localState : BestGenome;
+			});
+			
+			Parallel.For(0, PopulationSize, i =>
 			{
 				DetermineGenomeFitness(Population[i]);
 			});
 		}
 
-        public void DetermineGenomeFitness(Genome genome)
+        private void DetermineGenomeFitness(Genome genome)
 		{
 			float[] givenOutput = new float[_testSize];
 			Parallel.For(0, _testSize, i =>

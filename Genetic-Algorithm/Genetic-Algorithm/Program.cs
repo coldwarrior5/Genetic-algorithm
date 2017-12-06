@@ -1,4 +1,5 @@
 ﻿using System;
+using Genetic_Algorithm.Handlers;
 
 namespace Genetic_Algorithm
 {
@@ -7,16 +8,18 @@ namespace Genetic_Algorithm
         static void Main(string[] args)
         {
             Console.WriteLine("Genetic algorithm");
-	        float result = Start();
+	        Genome result = Start(args);
 			Console.WriteLine("Proces is finished");
 			Console.WriteLine("Best result is: ", result);
         }
 
-	    static float Start()
+	    static Genome Start(string[] args)
 	    {
-		    float result = 0;
-
-		    return result;
+		    InputData inputData = IoHandler.GetParameters(args);
+			FileHandler.ParseLines(inputData.FileName, out float[][] inputParams, out float[] desiredOutput);
+			Ga algorithm = new GenerationGa(inputParams, desiredOutput, inputData.PopulationSize, inputData.MutationProbability, inputData.CrossoverProbability, inputData.Elitism);
+		    Genome bestSolution = algorithm.Start();
+		    return bestSolution;
 	    }
     }
 }
