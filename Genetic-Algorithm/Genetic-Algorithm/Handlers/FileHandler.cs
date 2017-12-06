@@ -16,16 +16,16 @@ namespace Genetic_Algorithm.Handlers
 			float[][] inputs = new float[allLines.Length][];
 			float[] outputs = new float[allLines.Length];
 
-			Parallel.ForEach(allLines, (line, state, index ) => {
+			Parallel.For(0, allLines.Length, index => {
 
 				// Parsing output f(x,y)
-				string[] values = line.Split(string.Empty);
-				float.TryParse(values[values.Length], out outputs[index]);
+				string[] values = allLines[index].Split();
+				float.TryParse(values[values.Length - 1], out outputs[index]);
 
 				// Parsing input parameters x, y
 				inputs[index] = new float[values.Length - 1];
 				for(int i = 0; i < values.Length - 1; i++)
-					float.TryParse(values[values.Length], out inputs[index][i]);
+					float.TryParse(values[i], out inputs[index][i]);
 			});
 
 			inputParams = inputs;

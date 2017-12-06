@@ -10,7 +10,7 @@ namespace Genetic_Algorithm
             Console.WriteLine("Genetic algorithm");
 	        Genome result = Start(args);
 			Console.WriteLine("Proces is finished");
-			Console.WriteLine("Best result is: ", result);
+			Console.WriteLine("Best result is: ", result.Fitness + ", with parameters: " + result.Genes);
         }
 
 	    static Genome Start(string[] args)

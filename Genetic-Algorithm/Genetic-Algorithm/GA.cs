@@ -16,7 +16,7 @@ namespace Genetic_Algorithm
 		{
 			if(inputs.Length != desiredOutputs.Length)
 				throw new Exception("Number of inputs is not equal to number of outputs");
-			_testSize = _inputs.Length;
+			_testSize = inputs.Length;
 			_inputs = inputs;
 			_desiredOutput = desiredOutputs;
 		}

@@ -8,8 +8,10 @@
 		{
 			switch (choice)
 			{
+				case "e":
 				case "E":
 					return AlgorithmType.Elimination;
+				case "g":
 				case "G":
 					return AlgorithmType.Generation;
 				default:
