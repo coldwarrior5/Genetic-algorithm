@@ -9,7 +9,7 @@ namespace Genetic_Algorithm
 		private readonly float[][] _inputs;
 		private readonly float[] _desiredOutput;
 		protected Genome[] Population;
-		protected Genome BestGenome;
+		protected readonly Genome BestGenome;
 		protected readonly Random Rand;
 
 		protected Ga(float[][] inputs, float[] desiredOutputs)
@@ -20,6 +20,7 @@ namespace Genetic_Algorithm
 			_inputs = inputs;
 			_desiredOutput = desiredOutputs;
 			Rand = new Random();
+			BestGenome = new Genome(new float[]{}, float.MaxValue);
 		}
 
 		public abstract Genome Start();
@@ -28,24 +29,41 @@ namespace Genetic_Algorithm
 		{
 			object syncObject = new object();
 
-			Parallel.ForEach(Population, ()=> new Genome(null, float.MinValue), (genome, loopState, localState) =>
+			Parallel.ForEach(Population, ()=> new Genome(new float[]{}, float.MaxValue), (genome, loopState, localState) =>
 			{
-				DetermineGenomeFitness(genome);
-				return localState.Fitness > genome.Fitness ? localState : genome;
+				DetermineGenomeFitness(ref genome);
+				return genome.Fitness < localState.Fitness ? genome : localState;
 			},
 			localState =>
 			{
 				lock (syncObject)
-					BestGenome = localState.Fitness > BestGenome.Fitness ? localState : BestGenome;
+				{
+					if(localState.Fitness < BestGenome.Fitness)
+						BestGenome.Copy(localState);
+				} 
 			});
 		}
+		
+		protected void DetermineBestFitness()
+		{
+			object syncObject = new object();
+			foreach (Genome t in Population)
+			{
+				lock (syncObject)
+				{
+					if(t.Fitness < BestGenome.Fitness)
+						BestGenome.Copy(t);
+				}
+			}
+		}
 
-        private void DetermineGenomeFitness(Genome genome)
+        protected void DetermineGenomeFitness(ref Genome genome)
 		{
 			float[] givenOutput = new float[_testSize];
+			var gene = genome.Genes;
 			Parallel.For(0, _testSize, i =>
 			{
-				givenOutput[i] = Functions.F1(_inputs[i][0], _inputs[i][1], genome.Genes);
+				givenOutput[i] = Functions.F1(_inputs[i][0], _inputs[i][1], gene);
 			});
 			genome.Fitness = FitnessFunctions.Fitness1(_desiredOutput, givenOutput);
 		}

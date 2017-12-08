@@ -1,41 +1,39 @@
 using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Genetic_Algorithm
 {
     public class Genome
     {
-        private float[] _genes;
-        private float _fitness;
+        public float[] Genes;
+        public float Fitness;
 
         public Genome(float[] genes)
         {
-            _genes = genes;
-			_fitness = Single.MaxValue;
+            Genes = genes;
+			Fitness = Single.MaxValue;
         }
 
         public Genome(float[] genes, float fitness)
         {
-            _genes = genes;
-            _fitness = fitness;
-        }
-
-        public float[] Genes 
-        {
-            get{return _genes;}
-            set{_genes = value;}
-        }
-
-        public float Fitness 
-        {
-            get{return _fitness;}
-            set{_fitness = value;}
+            Genes =  genes;
+            Fitness = fitness;
         }
 
         public void Copy(Genome original)
 	    {
-		    _genes = original._genes;
-		    _fitness = original._fitness;
+		    Genes = FloatCopy(original.Genes);
+		    Fitness = original.Fitness;
 	    }
 		
+		private static float[] FloatCopy(float[] original)
+		{
+			float[] newGenes = new float[original.Length];
+			for (int i = 0; i < original.Length; i++)
+			{
+				newGenes[i] = original[i];
+			}
+			return newGenes;
+		}
     }
 }

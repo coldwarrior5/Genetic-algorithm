@@ -85,6 +85,8 @@ namespace Genetic_Algorithm.Handlers
 			var result = AlgorithmTypeString.Decode(args[1]);
 			if (result == null)
 				ErrorHandler.TerminateExecution(ErrorCode.WrongAlgorithmChoice);
+			else
+				inputData.Type = (AlgorithmType) result;
 
 			SetVariable(args[2], out inputData.PopulationSize);
 			SetVariable(args[3], out inputData.MutationProbability);
@@ -120,6 +122,10 @@ namespace Genetic_Algorithm.Handlers
 					SetVariable(args[6], out inputData.MinError);
 					break;
 			}
+			if (inputData.MaxIterations < 0)
+				inputData.MaxIterations = MaxIterations;
+			if (inputData.MinError < 0)
+				inputData.MinError = MinError;
 
 			return inputData;
 		}
