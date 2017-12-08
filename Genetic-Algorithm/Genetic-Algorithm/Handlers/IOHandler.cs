@@ -7,6 +7,8 @@ namespace Genetic_Algorithm.Handlers
 	public static class IoHandler
 	{
 		private static readonly string[] TerminationExpressions = {"quit", "stop", "exit", "terminate", "q"};
+		public const int MaxIterations = 10000;
+		public const double MinError = 10;
 
 		public static InputData GetParameters(string[] args)
 		{
@@ -18,9 +20,9 @@ namespace Genetic_Algorithm.Handlers
 					data = UserInput();
 					break;
 				case 5:
-					data = HandleArgs(args);
-					break;
 				case 6:
+				case 7:
+				case 8:
 					data = HandleArgs(args);
 					break;
 				default:
@@ -52,13 +54,18 @@ namespace Genetic_Algorithm.Handlers
 					Console.WriteLine("Crossover probability?");
 					inputData.CrossoverProbability = AskForProbability();
 					Console.WriteLine("Elitism?");
-					inputData.Elitism = AskForInput<bool>();
+					inputData.Elitism = AskForInput(true);
 					break;
 				case AlgorithmType.Elimination:
 					Console.WriteLine("Mortality in percentage?");
 					inputData.Mortality = AskForProbability();
 					break;
 			}
+			Console.WriteLine("Maximum number of iterations? (Default is 10,000)");
+			inputData.MaxIterations = AskForInput(MaxIterations);
+			Console.WriteLine("Minimum desired error? (Default is 10)");
+			inputData.MinError = AskForInput(MinError);
+
 			return inputData;
 		}
 
@@ -71,7 +78,7 @@ namespace Genetic_Algorithm.Handlers
 		{
 			InputData inputData = new InputData();
 
-			if(!File.Exists(args[0]))
+			if (!File.Exists(args[0]))
 				ErrorHandler.TerminateExecution(ErrorCode.NoSuchFile);
 			inputData.FileName = args[0];
 
@@ -79,37 +86,41 @@ namespace Genetic_Algorithm.Handlers
 			if (result == null)
 				ErrorHandler.TerminateExecution(ErrorCode.WrongAlgorithmChoice);
 
-			if(!TryParse(args[2], out int populationSize))
-				ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
-			inputData.PopulationSize = populationSize;
-
-			if (!TryParse(args[3], out float mutationProb))
-				ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
-			inputData.MutationProbability = mutationProb;
+			SetVariable(args[2], out inputData.PopulationSize);
+			SetVariable(args[3], out inputData.MutationProbability);
 
 			switch (inputData.Type)
 			{
 				case AlgorithmType.Generation:
-					if (!TryParse(args[4], out float crossoverProb))
-						ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
-					inputData.CrossoverProbability = crossoverProb;
-					if (args.Length != 6)
-					{
-						inputData.Elitism = true;
-					}
-					else
-					{
-						if (!TryParse(args[5], out bool elitism))
-							ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
-						inputData.Elitism = elitism;
-					}
+					SetVariable(args[4], out inputData.CrossoverProbability);
 					break;
 				case AlgorithmType.Elimination:
-					if (!TryParse(args[2], out float mortality))
-						ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
-					inputData.Mortality = mortality;
+					SetVariable(args[4], out inputData.Mortality);
 					break;
 			}
+
+			switch (args.Length)
+			{
+				case 5:
+					inputData.MaxIterations = MaxIterations;
+					inputData.MinError = MinError;
+					break;
+				case 6:
+					SetVariable(args[5], out inputData.Elitism);
+					inputData.MaxIterations = MaxIterations;
+					inputData.MinError = MinError;
+					break;
+				case 7:
+					SetVariable(args[5], out inputData.MaxIterations);
+					SetVariable(args[6], out inputData.MinError);
+					break;
+				case 8:
+					SetVariable(args[5], out inputData.Elitism);
+					SetVariable(args[5], out inputData.MaxIterations);
+					SetVariable(args[6], out inputData.MinError);
+					break;
+			}
+
 			return inputData;
 		}
 
@@ -173,6 +184,17 @@ namespace Genetic_Algorithm.Handlers
 			return result;
 		}
 
+		private static T AskForInput<T>(T defaultValue) where T : IConvertible
+		{
+			string input = Console.ReadLine();
+			CheckIfTerminating(input);
+			bool correctInput = TryParse(input, out T result);
+			if (!correctInput)
+				result = defaultValue;
+
+			return result;
+		}
+
 		private static bool TryParse<T>(string input, out T thisType) where T: IConvertible
 		{
 			bool success;
@@ -226,6 +248,34 @@ namespace Genetic_Algorithm.Handlers
 		{
 			if(TerminationExpressions.Contains(input))
 				ErrorHandler.TerminateExecution(ErrorCode.UserTermination);
+		}
+
+		private static void SetVariable(string pertinentArgument, out bool inputVariable)
+		{
+			if (!TryParse(pertinentArgument, out bool boolean))
+				ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
+			inputVariable = boolean;
+		}
+
+		private static void SetVariable(string pertinentArgument, out int inputVariable)
+		{
+			if (!TryParse(pertinentArgument, out int integer))
+				ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
+			inputVariable = integer;
+		}
+
+		private static void SetVariable(string pertinentArgument, out float inputVariable)
+		{
+			if (!TryParse(pertinentArgument, out float floating))
+				ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
+			inputVariable = floating;
+		}
+
+		private static void SetVariable(string pertinentArgument, out double inputVariable)
+		{
+			if (!TryParse(pertinentArgument, out double precise))
+				ErrorHandler.TerminateExecution(ErrorCode.CannotParse);
+			inputVariable = precise;
 		}
 	}
 }

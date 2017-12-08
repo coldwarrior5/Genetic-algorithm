@@ -22,55 +22,14 @@
 
 	public class InputData
 	{
-		private string _fileName;
-		private AlgorithmType _algorithmType;
-		private int _populationSize;
-		private float _mutationProbability;
-		private float _crossoverProbability;
-		private float _mortality;
-		private bool _elitism;
-
-
-		public string FileName
-		{
-			get => _fileName;
-			set => _fileName = value;
-		}
-
-		public float MutationProbability
-		{
-			get => _mutationProbability;
-			set => _mutationProbability = value;
-		}
-
-		public AlgorithmType Type
-		{
-			get => _algorithmType;
-			set => _algorithmType = value;
-		}
-
-		public float CrossoverProbability
-		{
-			get => _crossoverProbability;
-			set => _crossoverProbability = value;
-		}
-
-		public float Mortality
-		{
-			get => _mortality;
-			set => _mortality = value;
-		}
-
-		public bool Elitism
-		{
-			get => _elitism;
-			set => _elitism = value;
-		}
-
-		public int PopulationSize
-		{
-			get => _populationSize;
-			set => _populationSize = value;
-		}
+		public string FileName;
+		public AlgorithmType Type;
+		public int PopulationSize;
+		public float MutationProbability;
+		public float CrossoverProbability;
+		public float Mortality;
+		public bool Elitism;
+		public int MaxIterations;
+		public double MinError;
 	}
 }

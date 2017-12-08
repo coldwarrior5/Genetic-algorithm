@@ -1,17 +1,15 @@
-﻿namespace Genetic_Algorithm
+﻿using Genetic_Algorithm.Handlers;
+
+namespace Genetic_Algorithm
 {
 	public class GenerationGa : Ga
 	{
-		private readonly float _mutationProbability;
-		private readonly float _crossoverProbability;
-		private readonly bool _elitism;
-		public GenerationGa(float[][] inputs, float[] desiredOutputs, int populationSize, float mutationProbability, float crossoverProbability, bool elitism) : base(inputs, desiredOutputs)
+		private readonly InputData _data;
+
+		public GenerationGa(float[][] inputs, float[] desiredOutputs, InputData data) : base(inputs, desiredOutputs)
 		{
-			PopulationSize = populationSize;
-			Population = new Genome[PopulationSize];
-			_mutationProbability = mutationProbability;
-			_crossoverProbability = crossoverProbability;
-			_elitism = elitism;
+			_data = data;
+			Population = new Genome[data.PopulationSize];
 		}
 
 		public override Genome Start()

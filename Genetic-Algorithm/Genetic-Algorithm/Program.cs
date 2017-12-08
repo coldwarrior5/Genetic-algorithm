@@ -17,7 +17,7 @@ namespace Genetic_Algorithm
 	    {
 		    InputData inputData = IoHandler.GetParameters(args);
 			FileHandler.ParseLines(inputData.FileName, out float[][] inputParams, out float[] desiredOutput);
-			Ga algorithm = new GenerationGa(inputParams, desiredOutput, inputData.PopulationSize, inputData.MutationProbability, inputData.CrossoverProbability, inputData.Elitism);
+			Ga algorithm = new GenerationGa(inputParams, desiredOutput, inputData);
 		    Genome bestSolution = algorithm.Start();
 		    return bestSolution;
 	    }

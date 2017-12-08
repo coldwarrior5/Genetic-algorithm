@@ -28,6 +28,11 @@ namespace Genetic_Algorithm
             set{_fitness = value;}
         }
 
-        public Genome Copy(Genome original) => new Genome(original._genes, original._fitness);
+        public void Copy(Genome original)
+	    {
+		    _genes = original._genes;
+		    _fitness = original._fitness;
+	    }
+		
     }
 }

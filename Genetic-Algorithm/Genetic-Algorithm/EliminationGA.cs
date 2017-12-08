@@ -1,16 +1,15 @@
-﻿namespace Genetic_Algorithm
+﻿using Genetic_Algorithm.Handlers;
+
+namespace Genetic_Algorithm
 {
 	public class EliminationGa : Ga
 	{
-		private readonly float _mutationProbability;
-		private readonly float _mortality;
+		private readonly InputData _data;
 
-		public EliminationGa(float[][] inputs, float[] desiredOutputs, int populationSize, float mutationProbability, float mortality) : base(inputs, desiredOutputs)
+		public EliminationGa(float[][] inputs, float[] desiredOutputs, InputData data) : base(inputs, desiredOutputs)
 		{
-			PopulationSize = populationSize;
-			Population = new Genome[PopulationSize];
-			_mutationProbability = mutationProbability;
-			_mortality = mortality;
+			_data = data;
+			Population = new Genome[data.PopulationSize];
 		}
 
 		public override Genome Start()
