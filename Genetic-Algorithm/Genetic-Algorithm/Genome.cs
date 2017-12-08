@@ -1,3 +1,5 @@
+using System;
+
 namespace Genetic_Algorithm
 {
     public class Genome
@@ -8,6 +10,7 @@ namespace Genetic_Algorithm
         public Genome(float[] genes)
         {
             _genes = genes;
+			_fitness = Single.MaxValue;
         }
 
         public Genome(float[] genes, float fitness)

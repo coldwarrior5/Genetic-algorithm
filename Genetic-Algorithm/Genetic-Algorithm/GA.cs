@@ -10,7 +10,7 @@ namespace Genetic_Algorithm
 		private readonly float[] _desiredOutput;
 		protected Genome[] Population;
 		protected Genome BestGenome;
-		private readonly Random _rand;
+		protected readonly Random Rand;
 
 		protected Ga(float[][] inputs, float[] desiredOutputs)
 		{
@@ -19,7 +19,7 @@ namespace Genetic_Algorithm
 			_testSize = inputs.Length;
 			_inputs = inputs;
 			_desiredOutput = desiredOutputs;
-			_rand = new Random();
+			Rand = new Random();
 		}
 
 		public abstract Genome Start();
@@ -38,11 +38,6 @@ namespace Genetic_Algorithm
 				lock (syncObject)
 					BestGenome = localState.Fitness > BestGenome.Fitness ? localState : BestGenome;
 			});
-			
-			Parallel.For(0, Population.Length, i =>
-			{
-				DetermineGenomeFitness(Population[i]);
-			});
 		}
 
         private void DetermineGenomeFitness(Genome genome)
@@ -57,20 +52,20 @@ namespace Genetic_Algorithm
 
 		protected void Crossover(Genome first, Genome second, ref Genome child)
 		{
-			int which =_rand.Next(0, 4);
+			int which =Rand.Next(0, 4);
 			switch (which)
 			{
 				case 0:
-					CrossoverMethods.DiscreteRecombination(first, second, ref child, _rand);
+					CrossoverMethods.DiscreteRecombination(first, second, ref child, Rand);
 					break;
 				case 1:
-					CrossoverMethods.SimpleArithmeticRecombination(first, second, ref child, _rand);
+					CrossoverMethods.SimpleArithmeticRecombination(first, second, ref child, Rand);
 					break;
 				case 2:
-					CrossoverMethods.SingleArithmeticRecombination(first, second, ref child, _rand);
+					CrossoverMethods.SingleArithmeticRecombination(first, second, ref child, Rand);
 					break;
 				case 3:
-					CrossoverMethods.WholeArithmeticRecombination(first, second, ref child, _rand);
+					CrossoverMethods.WholeArithmeticRecombination(first, second, ref child, Rand);
 					break;
 				default:
 					child = null;
@@ -80,14 +75,14 @@ namespace Genetic_Algorithm
 
 		protected void Mutation(ref Genome gene)
 		{
-			int which = _rand.Next(0, 2);
+			int which = Rand.Next(0, 2);
 			switch (which)
 			{
 				case 0:
-					MutationMethods.SimpleMutation(ref gene, _rand);
+					MutationMethods.SimpleMutation(ref gene, Rand);
 					break;
 				case 1:
-					MutationMethods.BoundaryMutation(ref gene, _rand);
+					MutationMethods.BoundaryMutation(ref gene, Rand);
 					break;
 				default:
 					gene = null;
@@ -146,13 +141,13 @@ namespace Genetic_Algorithm
 		public static void SimpleMutation(ref Genome gene, Random rand)
 		{
 			int location = rand.Next(0, gene.Genes.Length);
-			gene.Genes[location] = (float)rand.NextDouble();
+			gene.Genes[location] = Functions.NewParamValue(rand);
 		}
 
 		public static void BoundaryMutation(ref Genome gene, Random rand)
 		{
 			int location = rand.Next(0, gene.Genes.Length);
-			gene.Genes[location] = rand.Next(0, 2);
+			gene.Genes[location] = rand.Next(0, 2) > 0 ? Functions.MaxValue : Functions.MinValue;
 		}
 	}
 }
