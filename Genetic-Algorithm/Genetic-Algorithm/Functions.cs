@@ -4,6 +4,7 @@ namespace Genetic_Algorithm
 {
 	public static class Functions
 	{
+		public static int ParamSize { get; } = 5;
 		public const int MinValue = -4;
 		public const int MaxValue = 4;
 

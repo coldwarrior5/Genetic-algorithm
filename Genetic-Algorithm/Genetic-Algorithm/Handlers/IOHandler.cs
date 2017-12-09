@@ -8,7 +8,7 @@ namespace Genetic_Algorithm.Handlers
 	{
 		private static readonly string[] TerminationExpressions = {"quit", "stop", "exit", "terminate", "q"};
 		public const int MaxIterations = 10000;
-		public const double MinError = 10;
+		public const double MinError = 1;
 
 		public static InputData GetParameters(string[] args)
 		{
@@ -63,7 +63,7 @@ namespace Genetic_Algorithm.Handlers
 			}
 			Console.WriteLine("Maximum number of iterations? (Default is 10,000)");
 			inputData.MaxIterations = AskForInput(MaxIterations);
-			Console.WriteLine("Minimum desired error? (Default is 10)");
+			Console.WriteLine("Minimum desired error? (Default is 1)");
 			inputData.MinError = AskForInput(MinError);
 
 			return inputData;
@@ -104,6 +104,7 @@ namespace Genetic_Algorithm.Handlers
 			switch (args.Length)
 			{
 				case 5:
+					inputData.Elitism = true;
 					inputData.MaxIterations = MaxIterations;
 					inputData.MinError = MinError;
 					break;
@@ -118,8 +119,8 @@ namespace Genetic_Algorithm.Handlers
 					break;
 				case 8:
 					SetVariable(args[5], out inputData.Elitism);
-					SetVariable(args[5], out inputData.MaxIterations);
-					SetVariable(args[6], out inputData.MinError);
+					SetVariable(args[6], out inputData.MaxIterations);
+					SetVariable(args[7], out inputData.MinError);
 					break;
 			}
 			if (inputData.MaxIterations < 0)

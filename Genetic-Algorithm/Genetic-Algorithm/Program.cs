@@ -30,8 +30,6 @@ namespace Genetic_Algorithm
 					break;
 			}
 		    Genome bestSolution = algorithm?.Start();
-		    //EliminationGa ab = new EliminationGa(inputParams, desiredOutput, inputData);
-		    //Genome bestSolution = ab.Test();
 			return bestSolution;
 	    }
 

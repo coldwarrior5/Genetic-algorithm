@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Genetic_Algorithm
@@ -91,21 +92,145 @@ namespace Genetic_Algorithm
 			}
 		}
 
-		protected void Mutation(ref Genome gene)
+		protected int RouletteWheelSelection(Random rand)
+		{
+			double totalFitness = 0;
+
+			foreach (Genome t in Population)
+			{
+				totalFitness += 1.0/(t.Fitness * t.Fitness);
+			}
+			double value = rand.NextDouble() * totalFitness;
+			for (int i = 0; i < Population.Length; i++)
+			{
+				value -= 1.0 / (Population[i].Fitness * Population[i].Fitness * totalFitness);
+				if (value <= 0)
+					return i;
+			}
+			// When rounding errors occur, we return the last item's index 
+			return Population.Length - 1;
+		}
+
+		protected double TotalFitness(double[] fitness)
+		{
+			double totalFitness = 0;
+			foreach (double t in fitness)
+				totalFitness += t;
+			return totalFitness;
+		}
+
+			protected void Mutation(ref Genome gene, int index)
 		{
 			int which = Rand.Next(0, 2);
 			switch (which)
 			{
 				case 0:
-					MutationMethods.SimpleMutation(ref gene, Rand);
+					MutationMethods.SimpleMutation(ref gene, index, Rand);
 					break;
 				case 1:
-					MutationMethods.BoundaryMutation(ref gene, Rand);
+					MutationMethods.BoundaryMutation(ref gene, index, Rand);
+					break;
+				case 2:
+					MutationMethods.SlightMutation(ref gene, index, Rand);
+					break;
+				case 3:
+					MutationMethods.SwitchPlaces(ref gene, index, Rand);
 					break;
 				default:
 					gene = null;
 					break;
 			}
+		}
+
+		// ReSharper disable once RedundantAssignment
+		protected static void Order(List<Genome> order)
+		{
+			Genome temp;
+			Genome temp2;
+			double worstFitness = float.MinValue;
+			int worstIndex = 2;
+			double bestFitness = float.MaxValue;
+			int bestIndex = 0;
+
+			for (int i = 0; i < 3; i++)
+			{
+				if (order[i].Fitness > worstFitness)
+				{
+					worstFitness = order[i].Fitness;
+					worstIndex = i;
+				}
+
+				if (order[i].Fitness < bestFitness)
+				{
+					bestFitness = order[i].Fitness;
+					bestIndex = i;
+				}
+			}
+
+			switch (bestIndex)
+			{
+				case 0 when worstIndex == 2:
+					return;
+				case 0:
+					temp = order[worstIndex];
+					order[worstIndex] = order[2];
+					order[2] = temp;
+					break;
+				case 1 when worstIndex == 2:
+					temp = order[bestIndex];
+					order[bestIndex] = order[0];
+					order[0] = temp;
+					break;
+				case 1:
+					temp = order[worstIndex];
+					order[worstIndex] = order[2];
+					order[2] = temp;
+					temp2 = order[bestIndex];
+					order[bestIndex] = order[0];
+					order[0] = temp2;
+					break;
+				case 2 when worstIndex == 0:
+					temp = order[bestIndex];
+					order[bestIndex] = order[0];
+					order[0] = temp;
+					break;
+				case 2:
+					temp = order[bestIndex];
+					order[bestIndex] = order[0];
+					order[0] = temp;
+					temp2 = order[worstIndex];
+					order[worstIndex] = order[2];
+					order[2] = temp2;
+					break;
+			}
+		}
+
+		protected void RandomPopulation(int paramSize)
+		{
+			Parallel.For(0, Population.Length, i =>
+			{
+				float[] field = new float[paramSize];
+				for (int j = 0; j < paramSize; j++)
+				{
+					field[j] = Functions.NewParamValue(Rand);
+				}
+				Population[i] = new Genome(field);
+			});
+			DeterminePopulationFitness();
+		}
+
+		protected static void RandomPopulation(int paramSize, Genome[] population)
+		{
+			Random rand = new Random();
+			Parallel.For(0, population.Length, i =>
+			{
+				float[] field = new float[paramSize];
+				for (int j = 0; j < paramSize; j++)
+				{
+					field[j] = Functions.NewParamValue(rand);
+				}
+				population[i] = new Genome(field);
+			});
 		}
 	}
 
@@ -156,16 +281,30 @@ namespace Genetic_Algorithm
 
 	public static class MutationMethods
 	{
-		public static void SimpleMutation(ref Genome gene, Random rand)
+		public static void SimpleMutation(ref Genome gene, int index, Random rand)
 		{
-			int location = rand.Next(0, gene.Genes.Length);
-			gene.Genes[location] = Functions.NewParamValue(rand);
+			gene.Genes[index] = Functions.NewParamValue(rand);
 		}
 
-		public static void BoundaryMutation(ref Genome gene, Random rand)
+		public static void BoundaryMutation(ref Genome gene, int index, Random rand)
 		{
-			int location = rand.Next(0, gene.Genes.Length);
-			gene.Genes[location] = rand.Next(0, 2) > 0 ? Functions.MaxValue : Functions.MinValue;
+			gene.Genes[index] = rand.Next(0, 2) > 0 ? Functions.MaxValue : Functions.MinValue;
+		}
+
+		public static void SlightMutation(ref Genome gene, int index, Random rand)
+		{
+			float delta = Functions.NewParamValue(rand);
+			float subtractDelta = (gene.Genes[index] - delta) % (Functions.MaxValue - Functions.MinValue) + Functions.MinValue;
+			float addDelta = (gene.Genes[index] + delta) % (Functions.MaxValue - Functions.MinValue) + Functions.MinValue;
+			gene.Genes[index] = rand.Next(0, 2) > 0 ? addDelta : subtractDelta;
+		}
+
+		public static void SwitchPlaces(ref Genome gene, int index, Random rand)
+		{
+			int index2 = rand.Next(0, gene.Genes.Length);
+			float temp = gene.Genes[index2];
+			gene.Genes[index2] = gene.Genes[index];
+			gene.Genes[index] = temp;
 		}
 	}
 }
