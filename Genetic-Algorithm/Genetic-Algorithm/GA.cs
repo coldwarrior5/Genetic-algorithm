@@ -98,12 +98,12 @@ namespace Genetic_Algorithm
 
 			foreach (Genome t in Population)
 			{
-				totalFitness += 1.0/(t.Fitness * t.Fitness);
+				totalFitness += 1.0/t.Fitness;
 			}
 			double value = rand.NextDouble() * totalFitness;
 			for (int i = 0; i < Population.Length; i++)
 			{
-				value -= 1.0 / (Population[i].Fitness * Population[i].Fitness * totalFitness);
+				value -= 1.0 / Population[i].Fitness;
 				if (value <= 0)
 					return i;
 			}

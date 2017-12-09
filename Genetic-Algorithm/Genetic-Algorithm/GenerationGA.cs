@@ -30,7 +30,7 @@ namespace Genetic_Algorithm
 				lastBest.Copy(BestGenome);
 				if (_data.Elitism)
 					_tempPopulation[0].Copy(BestGenome);
-				double fitnesss = CalculateFitness();
+				double unused = CalculateFitness();
 				Parallel.For(_data.Elitism ? 1 : 0, _data.PopulationSize, SingleThread);
 				SwapBuffers();
 				DeterminePopulationFitness();
