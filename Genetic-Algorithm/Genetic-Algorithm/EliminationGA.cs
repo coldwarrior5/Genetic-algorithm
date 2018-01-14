@@ -39,7 +39,7 @@ namespace Genetic_Algorithm
 
 		private void ThreeTournament(int index)
 		{
-			Random rnd = new Random(index);
+			Random rnd = new Random(index + DateTime.Now.Millisecond);
 			List<int> choices = new List<int>(3);
 			while (true)
 			{
@@ -59,7 +59,6 @@ namespace Genetic_Algorithm
 
 			Genome temp = new Genome(order[2].Genes);
 			Order(order);
-			temp.Copy(order[2]);
 
 			Crossover(order[0], order[1], ref temp);
 			for (int i = 0; i < temp.Genes.Length; i++)

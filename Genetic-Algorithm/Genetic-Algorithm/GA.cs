@@ -111,14 +111,6 @@ namespace Genetic_Algorithm
 			return Population.Length - 1;
 		}
 
-		protected double TotalFitness(double[] fitness)
-		{
-			double totalFitness = 0;
-			foreach (double t in fitness)
-				totalFitness += t;
-			return totalFitness;
-		}
-
 			protected void Mutation(ref Genome gene, int index)
 		{
 			int which = Rand.Next(0, 2);

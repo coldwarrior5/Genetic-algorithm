@@ -16,7 +16,7 @@ namespace Genetic_Algorithm
 			{
 				error += MathF.Pow(desiredOutput[i] - givenOutput[i], 2);
 			}
-			return error;
+			return error/desiredOutput.Length;
 		}
 	}
 }

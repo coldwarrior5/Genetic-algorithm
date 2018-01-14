@@ -213,6 +213,7 @@ namespace Genetic_Algorithm.Handlers
 
 			switch (typeCode)
 			{
+				
 				case TypeCode.Boolean:
 					success = Boolean.TryParse(input, out var b);
 					thisType = (T)Convert.ChangeType(b, typeCode);

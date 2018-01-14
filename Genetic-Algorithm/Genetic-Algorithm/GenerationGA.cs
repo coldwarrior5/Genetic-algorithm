@@ -44,7 +44,7 @@ namespace Genetic_Algorithm
 
 		private void SingleThread(int index)
 		{
-			Random rand = new Random(index);
+			Random rand = new Random(index + DateTime.Now.Millisecond);
 			int firstParentId = RouletteWheelSelection(rand);
 			int secondParentId = RouletteWheelSelection(rand);
 			while (secondParentId == firstParentId)
